@@ -206,22 +206,14 @@ def main():
                                 st.write('Close the pre opended file with same file name')
                                 
 
-##                    if st.checkbox("Save Data in .csv format"):
-##                        st.subheader("Save Data in CSV format")
-##                        filename = st.text_input("Enter Filename : ")
-##                        filename = filename+'.csv'
-##                        if st.checkbox("Save CSV Data"):
-##                            data.to_csv(filename,index=False)
-##                            st.write("**['INFO'] File saved successfully!**")
-
                     download = st.button('Download CSV File')
                     if download:
-                        filename = st.text_input("Enter Filename : ")
-                        filename = filename+'.csv'
+##                        filename = st.text_input("Enter Filename : ")
+##                        filename = filename+'.csv'
                         'Download Started!'
                         csv = data.to_csv(index=False)
                         b64 = base64.b64encode(csv.encode()).decode()  # some strings
-                        linko= f'<a href="data:file/csv;base64,{b64}" download={filename}>Download csv file</a>'
+                        linko= f'<a href="data:file/csv;base64,{b64}" download="downloadData.csv">Download csv file</a>'
                         st.markdown(linko, unsafe_allow_html=True)
     
 if __name__ == '__main__':
