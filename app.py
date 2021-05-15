@@ -4,11 +4,10 @@ import streamlit as st
 import requests
 from bs4 import BeautifulSoup
 import bitly_api
-import base64
 
 # Bitly Access Token
-BITLY_ACCESS_TOKEN = '749d6a714f1342aaced60e021f4a05ced8c7841d'
-access = bitly_api.Connection(access_token = BITLY_ACCESS_TOKEN)
+#BITLY_ACCESS_TOKEN = '749d6a714f1342aaced60e021f4a05ced8c7841d'
+#access = bitly_api.Connection(access_token = BITLY_ACCESS_TOKEN)
 
 # Create empty lists
 Name = []
@@ -190,29 +189,29 @@ def main():
                         selected_col = st.multiselect("Select Numeric Columns",all_columns)
                         data[selected_col] = data[selected_col].astype(int)
                         st.write(selected_col, "Converted to numeric value")
-                        
-                    if st.checkbox("Save Data in .xlsx format"):
-                        st.subheader("Save Data as Excel Sheet")
-                        filename = st.text_input("Enter Filename: ")
-                        filename = filename+'.xlsx'
-                        if st.checkbox("Save Excel Data"):
-                            try:    
-                                writer = pd.ExcelWriter(filename, engine='xlsxwriter', options={'strings_to_urls': False})
-                                data.to_excel(writer,index=False)
-                                writer.close()
-                                st.write("**['INFO'] File saved successfully!**")
-                            except PermissionError as pr:
-                                st.write(pr)
-                                st.write('Close the pre opended file with same file name')
-                                
-
-                    if st.checkbox("Save Data in .csv format"):
-                        st.subheader("Save Data in CSV format")
-                        filename = st.text_input("Enter Filename : ")
-                        filename = filename+'.csv'
-                        if st.checkbox("Save CSV Data"):
-                            data.to_csv(filename,index=False)
-                            st.write("**['INFO'] File saved successfully!**")
+##                        
+##                    if st.checkbox("Save Data in .xlsx format"):
+##                        st.subheader("Save Data as Excel Sheet")
+##                        filename = st.text_input("Enter Filename: ")
+##                        filename = filename+'.xlsx'
+##                        if st.checkbox("Save Excel Data"):
+##                            try:    
+##                                writer = pd.ExcelWriter(filename, engine='xlsxwriter', options={'strings_to_urls': False})
+##                                data.to_excel(writer,index=False)
+##                                writer.close()
+##                                st.write("**['INFO'] File saved successfully!**")
+##                            except PermissionError as pr:
+##                                st.write(pr)
+##                                st.write('Close the pre opended file with same file name')
+##                                
+##
+##                    if st.checkbox("Save Data in .csv format"):
+##                        st.subheader("Save Data in CSV format")
+##                        filename = st.text_input("Enter Filename : ")
+##                        filename = filename+'.csv'
+##                        if st.checkbox("Save CSV Data"):
+##                            data.to_csv(filename,index=False)
+##                            st.write("**['INFO'] File saved successfully!**")
         
 if __name__ == '__main__':
     main()
