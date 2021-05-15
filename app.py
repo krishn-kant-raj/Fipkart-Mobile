@@ -190,30 +190,16 @@ def main():
                         selected_col = st.multiselect("Select Numeric Columns",all_columns)
                         data[selected_col] = data[selected_col].astype(int)
                         st.write(selected_col, "Converted to numeric value")
-                        
-                    if st.checkbox("Save Data in .xlsx format"):
-                        st.subheader("Save Data as Excel Sheet")
-                        filename = st.text_input("Enter Filename: ")
-                        filename = filename+'.xlsx'
-                        if st.checkbox("Save Excel Data"):
-                            try:    
-                                writer = pd.ExcelWriter(filename, engine='xlsxwriter', options={'strings_to_urls': False})
-                                data.to_excel(writer,index=False)
-                                writer.close()
-                                st.write("**['INFO'] File saved successfully!**")
-                            except PermissionError as pr:
-                                st.write(pr)
-                                st.write('Close the pre opended file with same file name')
                                 
 
                     download = st.button('Download CSV File')
                     if download:
-##                        filename = st.text_input("Enter Filename : ")
-##                        filename = filename+'.csv'
+                        filename = st.text_input("Enter Filename : ")
+                        filename = filename+'.csv'
                         'Download Started!'
                         csv = data.to_csv(index=False)
                         b64 = base64.b64encode(csv.encode()).decode()  # some strings
-                        linko= f'<a href="data:file/csv;base64,{b64}" download="downloadData.csv">Download csv file</a>'
+                        linko= f'<a href="data:file/csv;base64,{b64} download={filename}">Download csv file</a>'
                         st.markdown(linko, unsafe_allow_html=True)
     
 if __name__ == '__main__':
