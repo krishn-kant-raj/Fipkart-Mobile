@@ -181,7 +181,7 @@ def main():
                             'Link':Links
                         }
                         data = pd.DataFrame(data)
-                    except UnboundLocalError as ub:
+                    except (UnboundLocalError,ValueError) as er:
                         st.write("**Please do the tasks sequentially**")
 
                     if st.checkbox("Show Head"):
