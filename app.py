@@ -70,6 +70,10 @@ def main():
                     img = soup.find_all('img',{'class':'_396cs4 _3exPp9'})
                     st.write("*[INFO] Phones in Page *"+str(i)+'* is *'+str(len(name)))
 
+                    if len(name)==0:
+                        st.write("**Please enter correct speling of Mobile brand!**")
+                        break
+
                     for i in name:
                         Name.append(i.text)
                     for i in price:
@@ -87,10 +91,11 @@ def main():
                     for i in img:
                         imglink = i.get('src')
                         Image.append(imglink)
-
-                st.write("*[INFO] Raw data scraped.*")
                 
                 if st.checkbox("Show Counts"):
+                    if len(Name)==0:
+                        st.write('Try again! Nothing Scraped.')
+                    else:
                         st.write('**Name Count=**',len(Name))
                         st.write('**Price Count=**',len(Price))
                         st.write('**Rating Count=**',len(Rating))
@@ -100,9 +105,12 @@ def main():
                         
                 if st.checkbox("Check Missing Data"):
                     if (len(Name)==len(Price) and len(Name)==len(Rating) and len(Name)==len(Review) and len(Name)==len(Links)):
-                        st.write('**Woo hoo! No missing Data found**')
+                        if len(Name)==0 and len(Price)==0:
+                            st.write('**Nothing Scraped! Check brand name speling.**')
+                        else:
+                            st.write('**Woo hoo! No missing Data found**')
                     else:
-                        st.write("Some rows have *None* value")
+                        st.write("**Some rows have missing values**")
                         
                         if st.checkbox("Fill Missing Data with None"):      
                             if len(Price)<len(Name):
@@ -119,18 +127,16 @@ def main():
                                     Links.append('None')
                             st.write("**Missing Data Filled with 'None'**")
 
-                        if st.checkbox("Remove None Rows"):
-                            data = data[~data.Rating.str.contains("None")]
-                            st.write("**Rows having 'None' values are removed.**")
-                            st.write(data)
-
                         if st.checkbox("Show Count"):
-                            st.write("Count after filled missing data")
-                            st.write('**Name Count=**',len(Name))
-                            st.write('**Price Count=**',len(Price))
-                            st.write('**Rating Count=**',len(Rating))
-                            st.write('**Review Count=**',len(Review))
-                            st.write('**Links Count=**',len(Links))
+                            if len(Name)==0:
+                                st.write('Try again! Nothing Scraped.')
+                            else:
+                                st.write("Count after filled missing data")
+                                st.write('**Name Count=**',len(Name))
+                                st.write('**Price Count=**',len(Price))
+                                st.write('**Rating Count=**',len(Rating))
+                                st.write('**Review Count=**',len(Review))
+                                st.write('**Links Count=**',len(Links))
 
                 if st.checkbox("Clean Price Data"):
                     st.write("[Info] Cleaning Price Data...")
@@ -166,14 +172,17 @@ def main():
                     st.write(clean_rating[:5])
 
                 if st.checkbox("Convert to DataFrame"):
-                    data = {
-                        'Product_Name':Name,
-                        'Price':clean_price,
-                        'Rating':clean_rating,
-                        'Review':clean_review,
-                        'Link':Links
-                    }
-                    data = pd.DataFrame(data)
+                    try:
+                        data = {
+                            'Product_Name':Name,
+                            'Price':clean_price,
+                            'Rating':clean_rating,
+                            'Review':clean_review,
+                            'Link':Links
+                        }
+                        data = pd.DataFrame(data)
+                    except UnboundLocalError as ub:
+                        st.write("**Please do the tasks sequentially**")
 
                     if st.checkbox("Show Head"):
                         st.write(data.head(5))
@@ -182,7 +191,10 @@ def main():
                         st.write(data.tail(5))
 
                     if st.checkbox("Show Sample"):
-                        st.write(data.sample(5))
+                        try:
+                            st.write(data.sample(5))
+                        except ValueError as vl:
+                            st.write('**Nothing scraped. **')
 
                     if st.checkbox("Describe Data"):
                         st.write(data.describe())
@@ -193,15 +205,25 @@ def main():
                         new_df = data[selected_columns]
                         st.dataframe(new_df)
                         
+                    if st.checkbox("Remove None Rows"):
+                        data = data[~data.Rating.str.contains("None")]
+                        st.write("**Rows having 'None' values are removed.**")
+                        st.write(data)
+                        
                     if st.checkbox("Convert to Numeric type"):
                         all_columns = data.columns.to_list()
                         selected_col = st.multiselect("Select Numeric Columns",all_columns)
-                        data[selected_col] = data[selected_col].astype(int)
-                        st.write(selected_col, "Converted to numeric value")
+                        try:
+                            data[selected_col] = data[selected_col].astype(int)
+                        except ValueError as vl:
+                            st.write("*Do the above step first to remove None values*")
+                        st.write(selected_col, "**Converted to numeric value**")
                                 
                     if st.checkbox("Show Product Images"):
                         for i in range(len(Image)):
                             st.image(Image[i], width=100, caption=data['Product_Name'][i])
+                            st.write('Price Rs. ',data['Price'][i])
+                            st.write('Rating:',data['Rating'][i], 'Reviews:',data['Review'][i])
 
                         
                     download = st.button('Download CSV File')
@@ -209,7 +231,7 @@ def main():
                         'Download Started!'
                         csv = data.to_csv(index=False)
                         b64 = base64.b64encode(csv.encode()).decode()  # some strings
-                        linko= f'<a href="data:file/csv;base64,{b64}" download="flipkart-mobile.csv">Download csv file</a>'
+                        linko= f'<a href="data:file/csv;base64,{b64}" download="flipkart-mobile.csv"><b>Download csv file<b></a>'
                         st.markdown(linko, unsafe_allow_html=True)
     
 if __name__ == '__main__':
