@@ -221,7 +221,7 @@ def main():
                         'Download Started!'
                         csv = data.to_csv(index=False)
                         b64 = base64.b64encode(csv.encode()).decode()  # some strings
-                        linko= f'<a href="data:file/csv;base64,{b64}" download=filename>Download csv file</a>'
+                        linko= f'<a href="data:file/csv;base64,{b64}" download={filename}>Download csv file</a>'
                         st.markdown(linko, unsafe_allow_html=True)
     
 if __name__ == '__main__':
