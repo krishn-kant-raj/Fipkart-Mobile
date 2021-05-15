@@ -119,18 +119,18 @@ def main():
                                     Links.append('None')
                             st.write("**Missing Data Filled with 'None'**")
 
-                            if st.checkbox("Remove None Rows"):
-                                data = data[~data.Rating.str.contains("None")]
-                                st.write("**Rows having 'None' values are removed.**")
-                                st.write(data)
+                        if st.checkbox("Remove None Rows"):
+                            data = data[~data.Rating.str.contains("None")]
+                            st.write("**Rows having 'None' values are removed.**")
+                            st.write(data)
 
-                            if st.checkbox("Show Count"):
-                                st.write("Count after filled missing data")
-                                st.write('**Name Count=**',len(Name))
-                                st.write('**Price Count=**',len(Price))
-                                st.write('**Rating Count=**',len(Rating))
-                                st.write('**Review Count=**',len(Review))
-                                st.write('**Links Count=**',len(Links))
+                        if st.checkbox("Show Count"):
+                            st.write("Count after filled missing data")
+                            st.write('**Name Count=**',len(Name))
+                            st.write('**Price Count=**',len(Price))
+                            st.write('**Rating Count=**',len(Rating))
+                            st.write('**Review Count=**',len(Review))
+                            st.write('**Links Count=**',len(Links))
 
                 if st.checkbox("Clean Price Data"):
                     st.write("[Info] Cleaning Price Data...")
