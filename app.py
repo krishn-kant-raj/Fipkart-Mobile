@@ -3,6 +3,7 @@ import numpy as np
 import streamlit as st
 import requests
 from bs4 import BeautifulSoup
+import base64
 #import bitly_api
 
 # Bitly Access Token
