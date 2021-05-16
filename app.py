@@ -10,10 +10,15 @@ import base64
 #BITLY_ACCESS_TOKEN = 'access token'
 #access = bitly_api.Connection(access_token = BITLY_ACCESS_TOKEN)
 
-# Create empty lists
-
 def main():
-
+    # Create empty lists
+    Name = []
+    Price = []
+    Rating = []
+    Review = []
+    Links = []
+    Image = []
+    
     st.markdown("![img](https://i.imgur.com/dqOEkud.png)")
     "### Semi Automated WebSraping App for Flipkart *(Mobiles only)*"
     
