@@ -7,7 +7,7 @@ import base64
 #import bitly_api
 
 # Bitly Access Token
-#BITLY_ACCESS_TOKEN = '749d6a714f1342aaced60e021f4a05ced8c7841d'
+#BITLY_ACCESS_TOKEN = 'access token'
 #access = bitly_api.Connection(access_token = BITLY_ACCESS_TOKEN)
 
 # Create empty lists
@@ -23,15 +23,23 @@ def main():
     st.markdown("![img](https://i.imgur.com/dqOEkud.png)")
     "### Semi Automated WebSraping App for Flipkart *(Mobiles only)*"
     
-    #activities = ["Collect and Clean Data"]
-    
-    #choice = st.sidebar.selectbox("Select Activities",activities)
-    #if choice == 'Collect and Clean Data':
-        #st.subheader("Collect Data of a Mobile Brand")
+    st.sidebar.markdown("""|Some Examples of Mobile Brand Name|
+                           |                :----:            |
+                           | Mi |
+                           |Realme |
+                           |Samsung |
+                           |Infinix |
+                           |Nokia |
+                           |OPPO |
+                           |Apple |
+                           |Vivo |
+                           |Honor |
+                           |Asus |
+                        """)
         
     if st.checkbox("Click to start"):
         try:
-            brand = st.text_input("Enter Mobile Brand Name : ","")
+            brand = st.text_input("Enter Mobile Brand Name (See examples in sidebar) ","")
             brand = brand.title().split()
             brand = brand[0]
         except IndexError as er:
@@ -94,7 +102,7 @@ def main():
                 
                 if st.checkbox("Show Counts"):
                     if len(Name)==0:
-                        st.write('Try again! Nothing Scraped.')
+                        st.write('*Try again! Nothing Scraped.*')
                     else:
                         st.write('**Name Count=**',len(Name))
                         st.write('**Price Count=**',len(Price))
@@ -129,7 +137,7 @@ def main():
 
                         if st.checkbox("Show Count"):
                             if len(Name)==0:
-                                st.write('Try again! Nothing Scraped.')
+                                st.write('*Try again! Nothing Scraped.*')
                             else:
                                 st.write("Count after filled missing data")
                                 st.write('**Name Count=**',len(Name))
@@ -182,10 +190,13 @@ def main():
                         }
                         data = pd.DataFrame(data)
                     except (UnboundLocalError,ValueError) as er:
-                        st.write("**Please do the tasks sequentially**")
+                        st.write("**Please do the tasks sequentially. Clean the Data.**")
 
                     if st.checkbox("Show Head"):
-                        st.write(data.head(5))
+                        try:
+                            st.write(data.head(5))
+                        except (AttributeError,UnboundLocalError) as er:
+                            st.write('*DataFrame not created. It may be there is no data scraped.*')
 
                     if st.checkbox("Show Tail"):
                         st.write(data.tail(5))
@@ -210,21 +221,21 @@ def main():
                         st.write("**Rows having 'None' values are removed.**")
                         st.write(data)
                         
-                    if st.checkbox("Convert to Numeric type"):
-                        all_columns = data.columns.to_list()
-                        selected_col = st.multiselect("Select Numeric Columns",all_columns)
-                        try:
-                            data[selected_col] = data[selected_col].astype(int)
-                        except ValueError as vl:
-                            st.write("*Do the above step first to remove None values*")
-                        st.write(selected_col, "**Converted to numeric value**")
+                        if st.checkbox("Convert to Numeric type"):
+                            all_columns = data.columns.to_list()
+                            selected_col = st.multiselect("Select Numeric Columns",all_columns)
+                            try:
+                                data[selected_col] = data[selected_col].astype(int)
+                            except ValueError as vl:
+                                st.write("*Do the above step first to remove None values*")
+                            st.write(selected_col, "**Converted to numeric value**")
                                 
                     if st.checkbox("Show Product Images"):
                         for i in range(len(Image)):
                             st.image(Image[i], width=100, caption=data['Product_Name'][i])
                             st.write('Price Rs. ',data['Price'][i])
                             st.write('Rating:',data['Rating'][i], 'Reviews:',data['Review'][i])
-
+                            st.markdown("------")
                         
                     download = st.button('Download CSV File')
                     if download:
