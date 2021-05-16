@@ -11,12 +11,6 @@ import base64
 #access = bitly_api.Connection(access_token = BITLY_ACCESS_TOKEN)
 
 # Create empty lists
-Name = []
-Price = []
-Rating = []
-Review = []
-Links = []
-Image = []
 
 def main():
 
@@ -31,12 +25,13 @@ def main():
                            |Infinix |
                            |Nokia |
                            |OPPO |
+                           |Poco |
                            |Apple |
                            |Vivo |
                            |Honor |
                            |Asus |
                         """)
-        
+
     if st.checkbox("Click to start"):
         try:
             brand = st.text_input("Enter Mobile Brand Name (See examples in sidebar) ","")
@@ -67,7 +62,6 @@ def main():
                     try:
                         req = requests.get(url)
                     except ConnectionError as er:
-                        st.write(er)
                         st.write('Please check your connection!')
                     
                     soup = BeautifulSoup(req.content, 'html.parser')
@@ -135,7 +129,7 @@ def main():
                                     Links.append('None')
                             st.write("**Missing Data Filled with 'None'**")
 
-                        if st.checkbox("Show Count"):
+                        if st.checkbox("Show Updated Count"):
                             if len(Name)==0:
                                 st.write('*Try again! Nothing Scraped.*')
                             else:
@@ -196,7 +190,7 @@ def main():
                         try:
                             st.write(data.head(5))
                         except (AttributeError,UnboundLocalError) as er:
-                            st.write('*DataFrame not created. It may be there is no data scraped.*')
+                            st.write('*Either the DataFrame not created or It may be there is no data scraped.*')
 
                     if st.checkbox("Show Tail"):
                         st.write(data.tail(5))
@@ -216,19 +210,17 @@ def main():
                         new_df = data[selected_columns]
                         st.dataframe(new_df)
                         
-                    if st.checkbox("Remove None Rows"):
+                    if st.checkbox("Convert to Numeric type"):
                         data = data[~data.Rating.str.contains("None")]
                         st.write("**Rows having 'None' values are removed.**")
                         st.write(data)
-                        
-                        if st.checkbox("Convert to Numeric type"):
-                            all_columns = data.columns.to_list()
-                            selected_col = st.multiselect("Select Numeric Columns",all_columns)
-                            try:
-                                data[selected_col] = data[selected_col].astype(int)
-                            except ValueError as vl:
-                                st.write("*Do the above step first to remove None values*")
-                            st.write(selected_col, "**Converted to numeric value**")
+                        all_columns = data.columns.to_list()
+                        selected_col = st.multiselect("Select Numeric Columns",all_columns)
+                        try:
+                            data[selected_col] = data[selected_col].astype(int)
+                        except ValueError as vl:
+                            st.write("*Please Recheck the checkbox*")
+                        st.write(selected_col, "**Converted to numeric value**")
                                 
                     if st.checkbox("Show Product Images"):
                         for i in range(len(Image)):
@@ -244,6 +236,7 @@ def main():
                         b64 = base64.b64encode(csv.encode()).decode()  # some strings
                         linko= f'<a href="data:file/csv;base64,{b64}" download="flipkart-mobile.csv"><b>Download csv file<b></a>'
                         st.markdown(linko, unsafe_allow_html=True)
+
     
 if __name__ == '__main__':
     main()
