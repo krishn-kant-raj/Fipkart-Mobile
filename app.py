@@ -99,7 +99,7 @@ def main():
                         ratings_reviews = soup.find_all('span',{"class":"_2_R_DZ"})
                         links = soup.find_all('a',{'class':'_1fQZEK'})
                         img = soup.find_all('img',{'class':'_396cs4 _3exPp9'})
-                        st.write("*[INFO] Phones in Page *"+str(i)+'* is *'+str(len(name)))
+                        st.write("**[INFO]** *Phones in Page *"+str(i)+'* is *'+str(len(name)))
 
 
                         for i in name:
@@ -152,14 +152,14 @@ def main():
                                         Links.append('None')
                                 st.write("**Missing Data Filled with 'None'**")
 
-                            st.write("[Info] Cleaning Price Data...")
+                            st.write("*[Info]* Cleaning Price Data...")
                             clean_price = []
                             for i in range(len(Price)):
                                 price = Price[i][1:].replace(',','')
                                 clean_price.append(price)
                             st.write(clean_price[:5])
                             
-                            st.write("[Info] Cleaning Reviews Data...")
+                            st.write("*[Info]* Cleaning Reviews Data...")
                             clean_review = []
                             for i in range(len(Review)):
                                 if Review[i]=='None':
@@ -170,6 +170,7 @@ def main():
                                     clean_review.append(Review_str)
                             st.write(clean_review[:5])  
 
+                            st.write("*[Info]* Cleaning Ratings Data...")
                             clean_rating = []
                             for i in range(len(Rating)):
                                 if Rating[i]=='None':
@@ -197,14 +198,12 @@ def main():
                             data = data[~data.Rating.str.contains("None")]
                             data[['Price','Rating','Review']] = data[['Price','Rating','Review']].astype(int)
 
-                                
-                            download = st.button('Download CSV File')
-                            if download:
-                                'Download Started!'
-                                csv = data.to_csv(index=False)
-                                b64 = base64.b64encode(csv.encode()).decode()  # some strings
-                                linko= f'<a href="data:file/csv;base64,{b64}" download="flipkart-mobile.csv"><b>Download csv file<b></a>'
-                                st.markdown(linko, unsafe_allow_html=True)
+
+                            'Click on below link to Download csv file!'
+                            csv = data.to_csv(index=False)
+                            b64 = base64.b64encode(csv.encode()).decode()  # some strings
+                            linko= f'<a href="data:file/csv;base64,{b64}" download="flipkart-mobile.csv"><b>Download csv file<b></a>'
+                            st.markdown(linko, unsafe_allow_html=True)
 
     elif choice=='Analyse':
         "### Upload collected data"
