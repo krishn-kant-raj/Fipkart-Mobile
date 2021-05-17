@@ -121,40 +121,37 @@ def main():
                             Image.append(imglink)
                             
                     if len(Name)!=0:
-                        if st.checkbox("Show Counts"):
-                            if len(Name)==0:
-                                st.write('*Try again! Nothing Scraped.*')
+                        if len(Name)==0:
+                            st.write('*Try again! Nothing Scraped.*')
+                        else:
+                            st.write('**Name Count=**',len(Name))
+                            st.write('**Price Count=**',len(Price))
+                            st.write('**Rating Count=**',len(Rating))
+                            st.write('**Review Count=**',len(Review))
+                            st.write('**Links Count=**',len(Links))
+                            st.write('**Image Count=**',len(Image))
+                            if (len(Name)==len(Price) and len(Name)==len(Rating) and len(Name)==len(Review) and len(Name)==len(Links)):
+                                st.write('**Woo hoo! No missing Data found**')
                             else:
-                                st.write('**Name Count=**',len(Name))
-                                st.write('**Price Count=**',len(Price))
-                                st.write('**Rating Count=**',len(Rating))
-                                st.write('**Review Count=**',len(Review))
-                                st.write('**Links Count=**',len(Links))
-                                st.write('**Image Count=**',len(Image))
-                                if (len(Name)==len(Price) and len(Name)==len(Rating) and len(Name)==len(Review) and len(Name)==len(Links)):
-                                    st.write('**Woo hoo! No missing Data found**')
+                                if len(Name)==0 and len(Price)==0:
+                                    st.write('**Nothing Scraped! Check brand name speling.**')
                                 else:
-                                    if len(Name)==0 and len(Price)==0:
-                                        st.write('**Nothing Scraped! Check brand name speling.**')
-                                    else:
-                                        st.write("**Some rows have missing values**")
-                           
-                                    if len(Price)<len(Name):
-                                        for i in range(0,(len(Name)-len(Price))):
-                                            Price.append('None')
-                                    if len(Rating)<len(Name):
-                                        for i in range(0,(len(Name)-len(Rating))):
-                                            Rating.append('None')
-                                    if len(Review)<len(Name):
-                                        for i in range(0,(len(Name)-len(Review))):
-                                            Review.append('None')
-                                    if len(Links)<len(Name):
-                                        for i in range(0,(len(Name)-len(Links))):
-                                            Links.append('None')
-                                    st.write("**Missing Data Filled with 'None'**")
+                                    st.write("**Some rows have missing values**")
+                       
+                                if len(Price)<len(Name):
+                                    for i in range(0,(len(Name)-len(Price))):
+                                        Price.append('None')
+                                if len(Rating)<len(Name):
+                                    for i in range(0,(len(Name)-len(Rating))):
+                                        Rating.append('None')
+                                if len(Review)<len(Name):
+                                    for i in range(0,(len(Name)-len(Review))):
+                                        Review.append('None')
+                                if len(Links)<len(Name):
+                                    for i in range(0,(len(Name)-len(Links))):
+                                        Links.append('None')
+                                st.write("**Missing Data Filled with 'None'**")
 
-
-                        if st.checkbox("Clean Raw Data"):
                             st.write("[Info] Cleaning Price Data...")
                             clean_price = []
                             for i in range(len(Price)):
@@ -183,31 +180,31 @@ def main():
                                     clean_rating.append(Rating_str)
                             st.write(clean_rating[:5])
 
-                            if st.checkbox("Convert to DataFrame"):
-                                data = {
-                                    'Product_Name':Name,
-                                    'Price':clean_price,
-                                    'Rating':clean_rating,
-                                    'Review':clean_review,
-                                    'Product Link':Links,
-                                    'Image Link':Image
-                                }
-                                try:
-                                    data = pd.DataFrame(data)
-                                except:
-                                    st.print('All columns are not of same length')
-                                    
-                                data = data[~data.Rating.str.contains("None")]
-                                data[['Price','Rating','Review']] = data[['Price','Rating','Review']].astype(int)
 
-                                    
-                                download = st.button('Download CSV File')
-                                if download:
-                                    'Download Started!'
-                                    csv = data.to_csv(index=False)
-                                    b64 = base64.b64encode(csv.encode()).decode()  # some strings
-                                    linko= f'<a href="data:file/csv;base64,{b64}" download="flipkart-mobile.csv"><b>Download csv file<b></a>'
-                                    st.markdown(linko, unsafe_allow_html=True)
+                            data = {
+                                'Product_Name':Name,
+                                'Price':clean_price,
+                                'Rating':clean_rating,
+                                'Review':clean_review,
+                                'Product Link':Links,
+                                'Image Link':Image
+                            }
+                            try:
+                                data = pd.DataFrame(data)
+                            except:
+                                st.print('All columns are not of same length')
+                                
+                            data = data[~data.Rating.str.contains("None")]
+                            data[['Price','Rating','Review']] = data[['Price','Rating','Review']].astype(int)
+
+                                
+                            download = st.button('Download CSV File')
+                            if download:
+                                'Download Started!'
+                                csv = data.to_csv(index=False)
+                                b64 = base64.b64encode(csv.encode()).decode()  # some strings
+                                linko= f'<a href="data:file/csv;base64,{b64}" download="flipkart-mobile.csv"><b>Download csv file<b></a>'
+                                st.markdown(linko, unsafe_allow_html=True)
 
     elif choice=='Analyse':
         "### Upload collected data"
