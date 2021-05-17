@@ -18,9 +18,20 @@ def main():
     Review = []
     Links = []
     Image = []
+    
+    st.markdown(''' **Author:** `Krishn Kant Raj` and `Intekhab Ahmad`
+    of Motihari College of Engineering, Motihari
+    *(Department of Computer Science and Engineering)*
 
+    **Publish Date:** 15 May, 2021
+
+    [GitHub](https://github.com/krishn-kant-raj/Fipkart-Mobile) 
+    [Krishn Kant Raj Linkedin](https://www.linkedin.com/in/krishnkantraj/) 
+    [Intekhab Ahmad Linkedin](https://www.linkedin.com/in/intekhabahmad/)
+    ''')
     st.markdown("![img](https://i.imgur.com/dqOEkud.png)")
-    "### Semi Automated WebSraping App for Flipkart *(Mobiles only)*"
+
+    
     activities = ["Collect Data","Analyse"]    
     choice = st.sidebar.selectbox("Select Activities",activities)
 
@@ -39,6 +50,7 @@ def main():
                            |Asus |
                         """)
     if choice == 'Collect Data':
+        "### Semi Automated WebSraping App for Flipkart *(Mobiles only)*"
         st.subheader("Flipkart Mobile Data Scraping...")
         if st.checkbox("Click to start"):
             try:
@@ -122,25 +134,24 @@ def main():
                                 if (len(Name)==len(Price) and len(Name)==len(Rating) and len(Name)==len(Review) and len(Name)==len(Links)):
                                     st.write('**Woo hoo! No missing Data found**')
                                 else:
-                                    if st.checkbox("Check Missing Data"):
-                                        if len(Name)==0 and len(Price)==0:
-                                            st.write('**Nothing Scraped! Check brand name speling.**')
+                                    if len(Name)==0 and len(Price)==0:
+                                        st.write('**Nothing Scraped! Check brand name speling.**')
                                     else:
                                         st.write("**Some rows have missing values**")
-                               
-                                        if len(Price)<len(Name):
-                                            for i in range(0,(len(Name)-len(Price))):
-                                                Price.append('None')
-                                        if len(Rating)<len(Name):
-                                            for i in range(0,(len(Name)-len(Rating))):
-                                                Rating.append('None')
-                                        if len(Review)<len(Name):
-                                            for i in range(0,(len(Name)-len(Review))):
-                                                Review.append('None')
-                                        if len(Links)<len(Name):
-                                            for i in range(0,(len(Name)-len(Links))):
-                                                Links.append('None')
-                                        st.write("**Missing Data Filled with 'None'**")
+                           
+                                    if len(Price)<len(Name):
+                                        for i in range(0,(len(Name)-len(Price))):
+                                            Price.append('None')
+                                    if len(Rating)<len(Name):
+                                        for i in range(0,(len(Name)-len(Rating))):
+                                            Rating.append('None')
+                                    if len(Review)<len(Name):
+                                        for i in range(0,(len(Name)-len(Review))):
+                                            Review.append('None')
+                                    if len(Links)<len(Name):
+                                        for i in range(0,(len(Name)-len(Links))):
+                                            Links.append('None')
+                                    st.write("**Missing Data Filled with 'None'**")
 
 
                         if st.checkbox("Clean Raw Data"):
@@ -181,11 +192,13 @@ def main():
                                     'Product Link':Links,
                                     'Image Link':Image
                                 }
-                                data = pd.DataFrame(data)
+                                try:
+                                    data = pd.DataFrame(data)
+                                except:
+                                    st.print('All columns are not of same length')
                                     
                                 data = data[~data.Rating.str.contains("None")]
                                 data[['Price','Rating','Review']] = data[['Price','Rating','Review']].astype(int)
-                                st.write(['Price','Rating','Review'], "**Numeric Columns Converted to numeric value**")
 
                                     
                                 download = st.button('Download CSV File')
@@ -197,7 +210,8 @@ def main():
                                     st.markdown(linko, unsafe_allow_html=True)
 
     elif choice=='Analyse':
-        data = st.file_uploader("Upload a Dataset", type=["csv", "txt"])
+        "### Upload collected data"
+        data = st.file_uploader("Upload a Dataset", type=["csv"])
         if data is not None:
             df = pd.read_csv(data)
             st.dataframe(df.head())
@@ -239,7 +253,7 @@ def main():
                     st.markdown(linko, unsafe_allow_html=True)
             
                     
-        if st.checkbox("Show Product Images"):
+        if st.checkbox("Show Product Summary"):
             try:
                 for i in range(len(df['Image Link'])):
                     st.image(df['Image Link'][i], width=100, caption=df['Product_Name'][i])
