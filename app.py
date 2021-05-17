@@ -212,52 +212,52 @@ def main():
             df = pd.read_csv(data)
             st.dataframe(df.head())
             
-        if st.checkbox("Show Shape"):
-                st.write(df.shape)
+            if st.checkbox("Show Shape"):
+                    st.write(df.shape)
 
-        if st.checkbox("Show Tail"):
-            st.write(df.tail(5))
+            if st.checkbox("Show Tail"):
+                st.write(df.tail(5))
 
-        if st.checkbox("Show Sample"):
-            try:
-                st.write(df.sample(5))
-            except ValueError as vl:
-                st.write('**No Data Found!**')
+            if st.checkbox("Show Sample"):
+                try:
+                    st.write(df.sample(5))
+                except ValueError as vl:
+                    st.write('**No Data Found!**')
 
-        if st.checkbox("Describe Data"):
-            st.write(df.describe())
+            if st.checkbox("Describe Data"):
+                st.write(df.describe())
 
-        if st.checkbox("Show Selected Columns"):
-            all_columns = df.columns.to_list()
-            selected_columns = st.multiselect("Select Columns",all_columns)
-            new_df = df[selected_columns]
-            st.dataframe(new_df)
+            if st.checkbox("Show Selected Columns"):
+                all_columns = df.columns.to_list()
+                selected_columns = st.multiselect("Select Columns",all_columns)
+                new_df = df[selected_columns]
+                st.dataframe(new_df)
 
-        if st.checkbox("Drop Selected Columns"):
-            all_columns = df.columns.to_list()
-            selected_columns = st.multiselect("Select Columns to drop",all_columns)
-            clean_data = df.drop(selected_columns, axis = 1)
-            st.dataframe(clean_data)
+            if st.checkbox("Drop Selected Columns"):
+                all_columns = df.columns.to_list()
+                selected_columns = st.multiselect("Select Columns to drop",all_columns)
+                clean_data = df.drop(selected_columns, axis = 1)
+                st.dataframe(clean_data)
 
-            if st.checkbox("Save this data"):
-                download = st.button('Download CSV File')
-                if download:
-                    'Download Started!'
-                    csv = clean_data.to_csv(index=False)
-                    b64 = base64.b64encode(csv.encode()).decode()  # some strings
-                    linko= f'<a href="data:file/csv;base64,{b64}" download="clean-data.csv"><b>Download csv file<b></a>'
-                    st.markdown(linko, unsafe_allow_html=True)
-            
-                    
-        if st.checkbox("Show Product Summary"):
-            try:
-                for i in range(len(df['Image Link'])):
-                    st.image(df['Image Link'][i], width=100, caption=df['Product_Name'][i])
-                    st.write('Price Rs. ',df['Price'][i])
-                    st.write('Rating:',df['Rating'][i], 'Reviews:',df['Review'][i])
-                    st.markdown("------")
-            except :
-                st.write("**This feature is not available for selected dataset**")
+                if st.checkbox("Save this data"):
+                    download = st.button('Download CSV File')
+                    if download:
+                        'Download Started!'
+                        csv = clean_data.to_csv(index=False)
+                        b64 = base64.b64encode(csv.encode()).decode()  # some strings
+                        linko= f'<a href="data:file/csv;base64,{b64}" download="clean-data.csv"><b>Download csv file<b></a>'
+                        st.markdown(linko, unsafe_allow_html=True)
+                
+                        
+            if st.checkbox("Show Product Summary"):
+                try:
+                    for i in range(len(df['Image Link'])):
+                        st.image(df['Image Link'][i], width=100, caption=df['Product_Name'][i])
+                        st.write('Price Rs. ',df['Price'][i])
+                        st.write('Rating:',df['Rating'][i], 'Reviews:',df['Review'][i])
+                        st.markdown("------")
+                except :
+                    st.write("**This feature is not available for selected dataset**")
     
 if __name__ == '__main__':
     main()
