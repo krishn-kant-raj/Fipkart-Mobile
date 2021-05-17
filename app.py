@@ -225,7 +225,7 @@ def main():
 
         if st.checkbox("Drop Selected Columns"):
             all_columns = df.columns.to_list()
-            selected_columns = st.multiselect("Select Columns",all_columns)
+            selected_columns = st.multiselect("Select Columns to drop",all_columns)
             clean_data = df.drop(selected_columns, axis = 1)
             st.dataframe(clean_data)
 
