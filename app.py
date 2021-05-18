@@ -124,6 +124,7 @@ def main():
                             name = soup.find_all('div',{"class":"_4rR01T"})
                             
                             if len(name)==0:
+                                st.write('**Either given brand name is wrong or invalid input**')
                                 break
                             
                             price = soup.find_all('div',{"class":"_30jeq3 _1_WHN1"})
