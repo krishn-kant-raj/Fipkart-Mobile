@@ -109,14 +109,14 @@ def main():
                         url = flipkart_url+"&page="+str(i)
                         try:
                             req = requests.get(url)
-                        except ConnectionError as er:
+                        except (ConnectionError,SSLError) as er:
                             st.write('Please check your connection!')
 
                         soup = BeautifulSoup(req.content, 'html.parser')
                         name = soup.find_all('div',{"class":"_4rR01T"})
 
                         if len(name)==0:
-                            st.write('**Invalid Brand Name**')
+                            st.write('**Invalid Brand Name or Data is not available**')
                             break
                         
                         price = soup.find_all('div',{"class":"_30jeq3 _1_WHN1"})
