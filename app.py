@@ -4,6 +4,9 @@ import streamlit as st
 import requests
 from bs4 import BeautifulSoup
 import base64
+import plotly.express as px
+from plotly.subplots import make_subplots
+import plotly.graph_objects as go
 #import bitly_api
 
 # Bitly Access Token
@@ -18,6 +21,7 @@ def main():
     Review = []
     Links = []
     Image = []
+    Rating_points = []
     
     header_text="""
     <style>
@@ -109,19 +113,20 @@ def main():
                         url = flipkart_url+"&page="+str(i)
                         try:
                             req = requests.get(url)
-                        except (ConnectionError,SSLError) as er:
+                        except ConnectionError as er:
                             st.write('Please check your connection!')
 
                         soup = BeautifulSoup(req.content, 'html.parser')
                         name = soup.find_all('div',{"class":"_4rR01T"})
 
                         if len(name)==0:
-                            st.write('**Invalid Brand Name or Data is not available**')
+                            st.write('**Invalid Brand Name or Data is not available on page**',i)
                             break
                         
                         price = soup.find_all('div',{"class":"_30jeq3 _1_WHN1"})
                         ratings_reviews = soup.find_all('span',{"class":"_2_R_DZ"})
                         links = soup.find_all('a',{'class':'_1fQZEK'})
+                        rt_point = soup.find_all('div',{'class':'_3LWZlK'})
                         img = soup.find_all('img',{'class':'_396cs4 _3exPp9'})
                         st.write("**[Scraped]** *Phones in Page *"+str(i)+'* is *'+str(len(name)))
 
@@ -132,6 +137,8 @@ def main():
                         for i in ratings_reviews:
                             Rating.append(i.span.span.text)
                             Review.append(i.span.text)
+                        for i in rt_point:
+                            Rating_points.append(i.text)
                         #st.write('[INFO] Shortening link...')
                         for i in links:
                             linktext = 'https://www.flipkart.com'+i.get('href')
@@ -169,6 +176,9 @@ def main():
                             if len(Links)<len(Name):
                                 for i in range(0,(len(Name)-len(Links))):
                                     Links.append('None')
+                            if len(Rating_points)<len(Name):
+                                for i in range(0,len(Name)-len(Rating_points)):
+                                    Rating_points.append('0.0')
                             st.write("*[INFO]* **Missing Data Filled with 'None'**")
 
                         st.write("*[Info]* Cleaning Price Data...")
@@ -182,7 +192,7 @@ def main():
                         clean_review = []
                         for i in range(len(Review)):
                             if Review[i]=='None':
-                                clean_review.append('None')
+                                clean_review.append(0)
                             else:
                                 Review_str = Review[i].split('\xa0&\xa0',1)[1]
                                 Review_str = Review_str.replace(' Reviews','').replace(',','')
@@ -193,7 +203,7 @@ def main():
                         clean_rating = []
                         for i in range(len(Rating)):
                             if Rating[i]=='None':
-                                clean_rating.append('None')
+                                clean_rating.append(0)
                             else:
                                 Rating_str = Rating[i][:-1]
                                 Rating_str = Rating_str.replace(' Ratings','').replace(',','')
@@ -203,8 +213,9 @@ def main():
                         data = {
                             'Product_Name':Name,
                             'Price':clean_price,
-                            'Rating':clean_rating,
-                            'Review':clean_review,
+                            'Rating':Rating_points,
+                            'Total_Ratings':clean_rating,
+                            'Total_Reviews':clean_review,
                             'Product Link':Links,
                             'Image Link':Image
                         }
@@ -213,8 +224,9 @@ def main():
                         except:
                             st.print('All columns are not of same length')
                             
-                        data = data[~data.Rating.str.contains("None")]
-                        data[['Price','Rating','Review']] = data[['Price','Rating','Review']].astype(int)
+                        #data = data[~data.Total_Ratings.str.contains("None")]
+                        data[['Price','Total_Ratings','Total_Ratings']] = data[['Price','Total_Ratings','Total_Ratings']].astype(int)
+                        data[['Rating']] = data[['Rating']].astype(float).round(1)
                         filename = brand+'-Mobile'+'.csv'
                         csv = data.to_csv(index=False)
                         b64 = base64.b64encode(csv.encode()).decode()  # some strings
@@ -228,16 +240,18 @@ def main():
         if data is not None:
             df = pd.read_csv(data)
             st.dataframe(df.head())
+            show_df = df.loc[:, 'Product_Name':'Total_Reviews']
+            st.write('Product Link and Image Link Removed from View')
             
             if st.checkbox("Show Shape"):
                     st.write(df.shape)
 
             if st.checkbox("Show Tail"):
-                st.write(df.tail(5))
+                st.write(show_df.tail(5))
 
             if st.checkbox("Show Sample"):
                 try:
-                    st.write(df.sample(5))
+                    st.write(show_df.sample(5))
                 except ValueError as vl:
                     st.write('**No Data Found!**')
 
@@ -245,11 +259,43 @@ def main():
                 st.write(df.describe())
 
             if st.checkbox("Show Selected Columns"):
-                all_columns = df.columns.to_list()
+                all_columns = show_df.columns.to_list()
                 selected_columns = st.multiselect("Select Columns",all_columns)
                 new_df = df[selected_columns]
                 st.dataframe(new_df)
+                
+            if st.checkbox("Top Rated Mobiles"):
+                top_rated = show_df.nlargest(10,['Rating'])
+                st.dataframe(top_rated)
+                
+            if st.checkbox("Low Rated Mobiles"):
+                low_rated = show_df.nsmallest(10,['Rating'],'all')
+                st.dataframe(low_rated)
+            
+            if st.checkbox('Maximum Rating Count Mobile'):
+                Max_rating = show_df.nlargest(10, ['Total_Ratings'])
+                st.dataframe(Max_rating)
+                
+            if st.checkbox('Maximum Reviewed Mobile'):
+                Max_review = show_df.nlargest(10, ['Total_Reviews'])
+                st.dataframe(Max_review)
+                
+            if st.checkbox('Highest Price Mobile'):
+                Max_price = show_df.nlargest(10, ['Price'])
+                st.dataframe(Max_price)
+                
+            if st.checkbox('Minimum Rating Count Mobile'):
+                min_rating = show_df.nsmallest(10, ['Total_Ratings'], "first")
+                st.dataframe(min_rating)
 
+            if st.checkbox('Minimum Reviwed Mobile'):
+                min_review = show_df.nsmallest(10, ['Total_Reviews'], "first")
+                st.dataframe(min_review)
+                
+            if st.checkbox('Lowest Price Mobile'):
+                min_price = show_df.nsmallest(10, ['Price'], "all")
+                st.dataframe(min_price)
+                
             if st.checkbox("Drop Selected Columns"):
                 all_columns = df.columns.to_list()
                 selected_columns = st.multiselect("Select Columns to drop",all_columns)
