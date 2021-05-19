@@ -314,14 +314,13 @@ def main():
                     
                             
                 if st.checkbox("Show Product Summary"):
-                    if len(df)>100:
-                        st.write('**Length of dataset is **',len(df))
-                        st.write('*Showing First 10 Data...*')
+                    st.write('**Length of dataset is **',len(df))
+                    st.write('*Showing First 10 Data...*')
                     try:
                         for i in range(10):
                             st.image(df['Image Link'][i], width=100, caption=df['Product_Name'][i])
-                            st.write('Price Rs. ',df['Price'][i])
-                            st.write('Rating:',df['Rating'][i], 'Reviews:',df['Review'][i])
+                            st.write('Price Rs. ',df['Price'][i],'Ratings: ',df['Rating'][i])
+                            st.write('Total Ratings:',df['Total_Ratings'][i], 'Total Reviews:',df['Total_Reviews'][i])
                             st.markdown("------")
                     except :
                         st.write("**This feature is not available for selected dataset**")
