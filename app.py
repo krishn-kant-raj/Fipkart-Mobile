@@ -4,9 +4,6 @@ import streamlit as st
 import requests
 from bs4 import BeautifulSoup
 import base64
-import plotly.express as px
-from plotly.subplots import make_subplots
-import plotly.graph_objects as go
 #import bitly_api
 
 # Bitly Access Token
@@ -240,93 +237,95 @@ def main():
         if data is not None:
             df = pd.read_csv(data)
             st.dataframe(df.head())
-            show_df = df.loc[:, 'Product_Name':'Total_Reviews']
-            st.write('Product Link and Image Link Removed from View')
-            
-            if st.checkbox("Show Shape"):
-                    st.write(df.shape)
+            try:
+                show_df = df.loc[:, 'Product_Name':'Total_Reviews']
+                st.write('Product Link and Image Link Removed from View')
+                
+                if st.checkbox("Show Shape"):
+                        st.write(df.shape)
 
-            if st.checkbox("Show Tail"):
-                st.write(show_df.tail(5))
+                if st.checkbox("Show Tail"):
+                    st.write(show_df.tail(5))
 
-            if st.checkbox("Show Sample"):
-                try:
-                    st.write(show_df.sample(5))
-                except ValueError as vl:
-                    st.write('**No Data Found!**')
+                if st.checkbox("Show Sample"):
+                    try:
+                        st.write(show_df.sample(5))
+                    except ValueError as vl:
+                        st.write('**No Data Found!**')
 
-            if st.checkbox("Describe Data"):
-                st.write(df.describe())
+                if st.checkbox("Describe Data"):
+                    st.write(df.describe())
 
-            if st.checkbox("Show Selected Columns"):
-                all_columns = show_df.columns.to_list()
-                selected_columns = st.multiselect("Select Columns",all_columns)
-                new_df = df[selected_columns]
-                st.dataframe(new_df)
+                if st.checkbox("Show Selected Columns"):
+                    all_columns = show_df.columns.to_list()
+                    selected_columns = st.multiselect("Select Columns",all_columns)
+                    new_df = df[selected_columns]
+                    st.dataframe(new_df)
+                    
+                if st.checkbox("Top Rated Mobiles"):
+                    top_rated = show_df.nlargest(10,['Rating'])
+                    st.dataframe(top_rated)
+                    
+                if st.checkbox("Low Rated Mobiles"):
+                    low_rated = show_df.nsmallest(10,['Rating'],'all')
+                    st.dataframe(low_rated)
                 
-            if st.checkbox("Top Rated Mobiles"):
-                top_rated = show_df.nlargest(10,['Rating'])
-                st.dataframe(top_rated)
-                
-            if st.checkbox("Low Rated Mobiles"):
-                low_rated = show_df.nsmallest(10,['Rating'],'all')
-                st.dataframe(low_rated)
-            
-            if st.checkbox('Maximum Rating Count Mobile'):
-                Max_rating = show_df.nlargest(10, ['Total_Ratings'])
-                st.dataframe(Max_rating)
-                
-            if st.checkbox('Maximum Reviewed Mobile'):
-                Max_review = show_df.nlargest(10, ['Total_Reviews'])
-                st.dataframe(Max_review)
-                
-            if st.checkbox('Highest Price Mobile'):
-                Max_price = show_df.nlargest(10, ['Price'])
-                st.dataframe(Max_price)
-                
-            if st.checkbox('Minimum Rating Count Mobile'):
-                min_rating = show_df.nsmallest(10, ['Total_Ratings'], "first")
-                st.dataframe(min_rating)
+                if st.checkbox('Maximum Rating Count Mobile'):
+                    Max_rating = show_df.nlargest(10, ['Total_Ratings'])
+                    st.dataframe(Max_rating)
+                    
+                if st.checkbox('Maximum Reviewed Mobile'):
+                    Max_review = show_df.nlargest(10, ['Total_Reviews'])
+                    st.dataframe(Max_review)
+                    
+                if st.checkbox('Highest Price Mobile'):
+                    Max_price = show_df.nlargest(10, ['Price'])
+                    st.dataframe(Max_price)
+                    
+                if st.checkbox('Minimum Rating Count Mobile'):
+                    min_rating = show_df.nsmallest(10, ['Total_Ratings'], "first")
+                    st.dataframe(min_rating)
 
-            if st.checkbox('Minimum Reviwed Mobile'):
-                min_review = show_df.nsmallest(10, ['Total_Reviews'], "first")
-                st.dataframe(min_review)
-                
-            if st.checkbox('Lowest Price Mobile'):
-                min_price = show_df.nsmallest(10, ['Price'], "all")
-                st.dataframe(min_price)
-                
-            if st.checkbox("Drop Selected Columns"):
-                all_columns = df.columns.to_list()
-                selected_columns = st.multiselect("Select Columns to drop",all_columns)
-                clean_data = df.drop(selected_columns, axis = 1)
-                st.dataframe(clean_data)
+                if st.checkbox('Minimum Reviwed Mobile'):
+                    min_review = show_df.nsmallest(10, ['Total_Reviews'], "first")
+                    st.dataframe(min_review)
+                    
+                if st.checkbox('Lowest Price Mobile'):
+                    min_price = show_df.nsmallest(10, ['Price'], "all")
+                    st.dataframe(min_price)
+                    
+                if st.checkbox("Drop Selected Columns"):
+                    all_columns = df.columns.to_list()
+                    selected_columns = st.multiselect("Select Columns to drop",all_columns)
+                    clean_data = df.drop(selected_columns, axis = 1)
+                    st.dataframe(clean_data)
 
 
-                if st.checkbox('Download CSV File'):
-                    filename = st.text_input("Enter File Name: ","")
-                    if filename !="":
-                        filename = filename+'.csv'
-                        csv = clean_data.to_csv(index=False)
-                        b64 = base64.b64encode(csv.encode()).decode()  
-                        button = f'<a href="data:file/csv;base64,{b64}" download="{filename}"><b>Download Data</b></a>' 
-                        st.markdown(button,unsafe_allow_html=True)
-                    else:
-                        st.write("Enter File Name")
-                
-                        
-            if st.checkbox("Show Product Summary"):
-                if len(df)>100:
-                    st.write('**Length of dataset is **',len(df))
-                    st.write('*Showing First 10 Data...*')
-                try:
-                    for i in range(10):
-                        st.image(df['Image Link'][i], width=100, caption=df['Product_Name'][i])
-                        st.write('Price Rs. ',df['Price'][i])
-                        st.write('Rating:',df['Rating'][i], 'Reviews:',df['Review'][i])
-                        st.markdown("------")
-                except :
-                    st.write("**This feature is not available for selected dataset**")
-    
+                    if st.checkbox('Download CSV File'):
+                        filename = st.text_input("Enter File Name: ","")
+                        if filename !="":
+                            filename = filename+'.csv'
+                            csv = clean_data.to_csv(index=False)
+                            b64 = base64.b64encode(csv.encode()).decode()  
+                            button = f'<a href="data:file/csv;base64,{b64}" download="{filename}"><b>Download Data</b></a>' 
+                            st.markdown(button,unsafe_allow_html=True)
+                        else:
+                            st.write("Enter File Name")
+                    
+                            
+                if st.checkbox("Show Product Summary"):
+                    if len(df)>100:
+                        st.write('**Length of dataset is **',len(df))
+                        st.write('*Showing First 10 Data...*')
+                    try:
+                        for i in range(10):
+                            st.image(df['Image Link'][i], width=100, caption=df['Product_Name'][i])
+                            st.write('Price Rs. ',df['Price'][i])
+                            st.write('Rating:',df['Rating'][i], 'Reviews:',df['Review'][i])
+                            st.markdown("------")
+                    except :
+                        st.write("**This feature is not available for selected dataset**")
+            except KeyError as er:
+                st.write('**Other features are not avalable for uploaded dataset**')
 if __name__ == '__main__':
     main()
