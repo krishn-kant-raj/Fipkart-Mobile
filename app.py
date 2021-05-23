@@ -102,10 +102,9 @@ def main():
                 flipkart_url = f'https://www.flipkart.com/mobiles/pr?sid=tyy%2C4io&otracker=categorytree&p%5B%5D=facets.brand%255B%255D%3D{brand}&otracker=nmenu_sub_Electronics_0_{brand}'.format(brand)
             except InvalidSchema as er:
                 st.write(er)
-                st.write('Invalid Input')
+                st.warning('Invalid Input')
             if brand !="":    
-                st.write('Verify your data on below link')
-                st.write(flipkart_url)
+                st.markdown("[**Click here to Verify your data**](flipkart_url)")
                 pg_num = st.number_input('Enter how many page you want to scrap',step=1,min_value=1,max_value=10)
                 if st.checkbox("Start Scraping"):
                     for i in range(1,pg_num+1):
@@ -113,13 +112,13 @@ def main():
                         try:
                             req = requests.get(url)
                         except ConnectionError as er:
-                            st.write('Please check your connection!')
+                            st.warning('Please check your connection!')
 
                         soup = BeautifulSoup(req.content, 'html.parser')
                         name = soup.find_all('div',{"class":"_4rR01T"})
 
                         if len(name)==0:
-                            st.write('**Invalid Brand Name or Data is not available on page**',i)
+                            st.warning('**Invalid Brand Name or Data is not available on page**',i)
                             break
 
                         price = soup.find_all('div',{"class":"_30jeq3 _1_WHN1"})
@@ -129,7 +128,7 @@ def main():
                         img = soup.find_all('img',{'class':'_396cs4 _3exPp9'})
                         spec = soup.find_all('div',{'class':'fMghEO'})
                         st.write("**[Scraped]** *Phones in Page *"+str(i)+'* is *'+str(len(name)))
-                        st.write("**Specification** *Scrapping...*")
+                        st.info("**Specification** *Scrapping...*")
                         for link in range(len(links)):
                             spec_url = 'https://www.flipkart.com'+links[link].get('href')
                             Specification = requests.get(spec_url)
@@ -145,25 +144,38 @@ def main():
                                 
                             brand_list = ['Samsung','Karbonn','Lava','Nokia']
                             if brand not in brand_list:
-                                camera = str(speci.select("li:nth-child("+str(3)+")"))
-                                cam_text = camera.replace('[<li class="_21Ahn-">',"")
-                                cam_text = cam_text.replace('</li>]',"")
-                                Camera.append(cam_text)
-                                battery_cap = str(speci.select("li:nth-child("+str(4)+")"))
-                                bat_text = battery_cap.replace('[<li class="_21Ahn-">',"")
-                                bat_text = bat_text.replace('</li>]',"")
-                                Battery.append(bat_text)
-                                processor = str(speci.select("li:nth-child("+str(5)+")"))
-                                proc_text = processor.replace('[<li class="_21Ahn-">',"")
-                                proc_text = proc_text.replace('</li>]',"")
-                                Processor.append(proc_text)
-                            warranty = content.find(class_='_352bdz')
-                            Warranty.append(warranty.text.replace('Know More',""))
-                            
+                                try:
+                                    camera = str(speci.select("li:nth-child("+str(3)+")"))
+                                    cam_text = camera.replace('[<li class="_21Ahn-">',"")
+                                    cam_text = cam_text.replace('</li>]',"")
+                                    Camera.append(cam_text)
+                                except AttributeError:
+                                    Camera.append('Not Available')
+                                try:   
+                                    battery_cap = str(speci.select("li:nth-child("+str(4)+")"))
+                                    bat_text = battery_cap.replace('[<li class="_21Ahn-">',"")
+                                    bat_text = bat_text.replace('</li>]',"")
+                                    Battery.append(bat_text)
+                                except AttributeError:
+                                    Battery.append('Not Available')
+                                try:
+                                    processor = str(speci.select("li:nth-child("+str(5)+")"))
+                                    proc_text = processor.replace('[<li class="_21Ahn-">',"")
+                                    proc_text = proc_text.replace('</li>]',"")
+                                    Processor.append(proc_text)
+                                except AttributeError:
+                                    Processor.append('Not Available')
+                            try:
+                                warranty = content.find(class_='_352bdz')
+                                Warranty.append(warranty.text.replace('Know More',""))
+                            except AttributeError:
+                                Warranty.append("Not Available")
+                                
                         for ram in spec:
                             if "Display" in ram.ul.li.text:
                                 Storage.append('0 GB RAM | 0 GB ROM')
-                            Storage.append(ram.ul.li.text)
+                            else:
+                                Storage.append(ram.ul.li.text)
                         for i in name:
                             Name.append(i.text)
                         for i in price:
@@ -253,6 +265,7 @@ def main():
 ##                        st.write('Processor',len(Processor))
 ##                        st.write('Battery',len(Battery))
 ##                        st.write('Camera',len(Camera))
+##                        st.write(Storage)
 
                         if brand in brand_list:
                             data = {
@@ -296,7 +309,11 @@ def main():
                         b64 = base64.b64encode(csv.encode()).decode()  # some strings
                         button = f'<a href="data:file/csv;base64,{b64}" download="{filename}"><b>Download Data</b></a>'
                         st.markdown(button,unsafe_allow_html=True)
-
+                        st.balloons()
+                        st.balloons()
+                        st.balloons()
+                        st.balloons()
+                        
 
     elif choice=='Analyse':
         "### Upload collected data"
@@ -309,7 +326,7 @@ def main():
                 st.write('Product Link and Image Link Removed from View')
                 
                 if st.checkbox("Show Shape"):
-                        st.write(df.shape)
+                        st.write('**Rows=**',df.shape[0], '**Columns=**',df.shape[1])
 
                 if st.checkbox("Show Tail"):
                     st.write(show_df.tail(5))
@@ -384,7 +401,7 @@ def main():
                             
                 if st.checkbox("Show Product Summary"):
                     st.write('**Length of dataset is **',len(df['Image_link']))
-                    st.write('*Showing First 10 Data...*')
+                    st.info('*Showing First 10 Data...*')
                     try:
                         for i in range(10):
                             st.image(df['Image_link'][i], width=100, caption=df['Product_Name'][i])
