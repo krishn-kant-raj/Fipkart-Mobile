@@ -103,8 +103,10 @@ def main():
             except InvalidSchema as er:
                 st.write(er)
                 st.warning('Invalid Input')
-            if brand !="":    
-                st.markdown("[**Click here to Verify your data**](flipkart_url)")
+            if brand !="":
+                st.markdown("Open data verification link in new **`Tab`** or **`Window`**")
+                button = f'<a href="{flipkart_url}"><b>Verify your data here</b></a>'
+                st.markdown(button,unsafe_allow_html=True)
                 pg_num = st.number_input('Enter how many page you want to scrap',step=1,min_value=1,max_value=10)
                 if st.checkbox("Start Scraping"):
                     for i in range(1,pg_num+1):
@@ -118,7 +120,7 @@ def main():
                         name = soup.find_all('div',{"class":"_4rR01T"})
 
                         if len(name)==0:
-                            st.warning('**Invalid Brand Name or Data is not available on page**',i)
+                            st.write('**Invalid Mobile Brand Name or Data is not available on page**',i)
                             break
 
                         price = soup.find_all('div',{"class":"_30jeq3 _1_WHN1"})
@@ -309,9 +311,6 @@ def main():
                         b64 = base64.b64encode(csv.encode()).decode()  # some strings
                         button = f'<a href="data:file/csv;base64,{b64}" download="{filename}"><b>Download Data</b></a>'
                         st.markdown(button,unsafe_allow_html=True)
-                        st.balloons()
-                        st.balloons()
-                        st.balloons()
                         st.balloons()
                         
 
